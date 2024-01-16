@@ -18,6 +18,7 @@ void* threadfunc(void* thread_param)
     // Obtain the mutex
     if (pthread_mutex_lock(thread_func_args->mutex) != 0) {
         ERROR_LOG("Failed to obtain mutex");
+        thread_func_args->thread_complete_success = false;
         return NULL;
     }
 
@@ -27,11 +28,16 @@ void* threadfunc(void* thread_param)
     // Release the mutex
     if (pthread_mutex_unlock(thread_func_args->mutex) != 0) {
         ERROR_LOG("Failed to release mutex");
+        thread_func_args->thread_complete_success = false;
         return NULL;
     }
 
+    // Set the thread_complete_success to true indicating success
+    thread_func_args->thread_complete_success = true;
+
     return thread_param;
 }
+
 
 bool start_thread_obtaining_mutex(pthread_t* thread, pthread_mutex_t* mutex, int wait_to_obtain_ms, int wait_to_release_ms)
 {
